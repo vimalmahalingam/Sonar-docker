@@ -1,7 +1,5 @@
-package com.example;
-
-public class App {
+public class HelloWorld {
     public static void main(String[] args) {
-        System.out.println("Hello CI/CD World!");
+        System.out.println("Hello from Jenkins + Docker!");
     }
 }
