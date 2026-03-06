@@ -15,15 +15,15 @@ pipeline {
         stage('Checkout') {
             steps {
                 git branch: 'main',
-                    url: 'https://github.com/your-username/ci-cd-java-docker.git',
+                    url: 'https://github.com/vimalmahalingam/ci-cd-java-docker.git',
                     credentialsId: 'github-creds'
             }
         }
 
         stage('Build & Test') {
             steps {
-                sh 'mvn clean package'
-                sh 'mvn test'
+                sh 'javac src/App.java src/AppTest.java'
+                sh 'java -cp src AppTest'
             }
         }
 
