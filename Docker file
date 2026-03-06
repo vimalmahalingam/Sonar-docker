@@ -1,4 +1,10 @@
-FROM openjdk:17-jdk-slim
+# Use OpenJDK base image
+FROM openjdk:17-alpine
+
+# Copy compiled class into container
+COPY HelloWorld.class /app/HelloWorld.class
+
 WORKDIR /app
-COPY target/ci-cd-java-docker-1.0.jar app.jar
-ENTRYPOINT ["java","-jar","app.jar"]
+
+# Run the program
+CMD ["java", "HelloWorld"]
