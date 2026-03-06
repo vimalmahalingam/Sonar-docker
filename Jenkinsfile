@@ -2,47 +2,29 @@ pipeline {
     agent any
 
     environment {
-        GITHUB_CREDS = credentials('github-creds')
-        DOCKERHUB_CREDS = credentials('dockerhub-creds')
-        DOCKER_IMAGE = "your-dockerhub-username/ci-cd-java-docker"
-    }
-
-    triggers {
-        githubPush()
+        DOCKERHUB_CREDENTIALS = credentials('dockerhub-creds') 
+        DOCKER_IMAGE = "vimalmahalingam/hello-java"
     }
 
     stages {
-        stage('Checkout') {
+        stage('Compile Java') {
             steps {
-                git branch: 'main',
-                    url: 'https://github.com/vimalmahalingam/ci-cd-java-docker.git',
-                    credentialsId: 'github-creds'
+                sh 'javac HelloWorld.java'
             }
         }
 
-        stage('Build & Test') {
+        stage('Build Docker Image') {
             steps {
-                sh 'javac src/App.java src/AppTest.java'
-                sh 'java -cp src AppTest'
+                sh 'docker build -t $DOCKER_IMAGE:$BUILD_NUMBER .'
             }
         }
 
-        stage('Docker Build') {
+        stage('Push to Docker Hub') {
             steps {
-                sh "docker build -t $DOCKER_IMAGE:${env.BUILD_NUMBER} ."
-            }
-        }
-
-        stage('Push to DockerHub') {
-            steps {
-                sh "echo $DOCKERHUB_CREDS_PSW | docker login -u $DOCKERHUB_CREDS_USR --password-stdin"
-                sh "docker push $DOCKER_IMAGE:${env.BUILD_NUMBER}"
-            }
-        }
-
-        stage('Deploy') {
-            steps {
-                sh "docker run -d -p 8080:8080 $DOCKER_IMAGE:${env.BUILD_NUMBER}"
+                withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'USER', passwordVariable: 'PASS')]) {
+                    sh 'echo $PASS | docker login -u $USER --password-stdin'
+                    sh 'docker push $DOCKER_IMAGE:$BUILD_NUMBER'
+                }
             }
         }
     }
