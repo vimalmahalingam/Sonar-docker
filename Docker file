@@ -2,9 +2,9 @@
 FROM openjdk:17-alpine
 
 # Copy compiled class into container
-COPY HelloWorld.class /app/HelloWorld.class
+COPY App.class src/main/App.class
 
 WORKDIR /app
 
 # Run the program
-CMD ["java", "HelloWorld"]
+CMD ["java", "App"]
